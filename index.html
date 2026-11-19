@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Royal Tacos – Menu</title>
+<style>
+  html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #000; cursor: none; }
+  img {
+    position: fixed; inset: 0;
+    width: 100vw; height: 100vh;
+    object-fit: contain; object-position: center;
+    opacity: 0; transition: opacity 1.5s ease-in-out;
+  }
+  img.on { opacity: 1; }
+</style>
+</head>
+<body>
+<script>
+  // Liste des affiches, dans l'ordre. Une image absente est simplement ignorée.
+  var FILES = ['images/menu1.webp', 'images/menu2.webp'];
+  var DUREE = 15000;            // 15 s par affiche
+  var RELOAD = 30 * 60 * 1000;  // recharge toutes les 30 min
+
+  // Paramètre de version : change toutes les 30 min, donc la TV re-télécharge les images à chaque recharge.
+  var v = Math.floor(Date.now() / RELOAD);
+  var slides = [];
+
+  FILES.forEach(function (f) {
+    var img = new Image();
+    img.alt = '';
+    img.onload = function () { slides.push(img); if (slides.length === 1) img.className = 'on'; };
+    img.src = f + '?v=' + v;
+    document.body.appendChild(img);
+  });
+
+  var i = 0;
+  setInterval(function () {
+    if (slides.length < 2) return;  // une seule affiche : elle reste affichée
+    slides[i].className = '';
+    i = (i + 1) % slides.length;
+    slides[i].className = 'on';
+  }, DUREE);
+
+  // Ne recharge que si internet répond, sinon on garde l'affichage actuel et on réessaie plus tard.
+  setInterval(function () { if (navigator.onLine) location.reload(); }, RELOAD);
+</script>
+</body>
+</html>
